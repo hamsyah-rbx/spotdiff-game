@@ -2,7 +2,6 @@ import { chromium } from 'playwright';
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { writeFileSync } from 'node:fs';
 import { mkdirSync } from 'node:fs';
 
 const PORT = 9876;
@@ -32,70 +31,107 @@ console.log(`Server started on http://localhost:${PORT}`);
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
+await page.setViewportSize({ width: 1280, height: 720 });
 
 await page.goto(`http://localhost:${PORT}`, { waitUntil: 'networkidle' });
-await page.click('button#startBtn');
-await page.waitForTimeout(500);
 
 mkdirSync('screenshots', { recursive: true });
 
-// Screenshot 1: First scene
+// Screenshot 1: Title screen
 await page.screenshot({
-  path: 'screenshots/1-play.png',
+  path: 'screenshots/1-title.png',
   fullPage: false,
 });
+console.log('Screenshot 1 taken: 1-title.png');
 
-console.log('Screenshot 1 taken: 1-play.png');
+// Start game
+await page.click('button#startBtn');
+await page.waitForTimeout(500);
 
-// Take a few more by progressing
-for (let i = 2; i <= 4; i++) {
-  const button = page.locator('button#hintBtn');
-  if (await button.isEnabled()) {
-    await button.click();
-  }
-  await page.waitForTimeout(300);
-}
+// Find canvas elements and get their positions
+const leftCanvas = page.locator('canvas').first();
+const rightCanvas = page.locator('canvas').nth(1);
 
-await page.screenshot({
-  path: 'screenshots/2-progress.png',
-  fullPage: false,
-});
+// Click on actual differences based on scene data
+const diffsToClick = [
+  { x: 0.85, y: 0.15 },  // Sun
+  { x: 0.65, y: 0.38 },  // Umbrella
+  { x: 0.45, y: 0.58 },  // Sailboat
+  { x: 0.75, y: 0.52 },  // Starfish
+];
 
-console.log('Screenshot 2 taken: 2-progress.png');
-
-// Simulate finding a difference
-const canvases = page.locator('canvas');
-const boundingBox = await canvases.first().boundingBox();
-if (boundingBox) {
-  await page.click('canvas', { position: { x: boundingBox.width * 0.5, y: boundingBox.height * 0.5 } });
-}
-await page.waitForTimeout(300);
-
-await page.screenshot({
-  path: 'screenshots/3-found.png',
-  fullPage: false,
-});
-
-console.log('Screenshot 3 taken: 3-found.png');
-
-// Try a 4th
-for (let i = 0; i < 3; i++) {
-  const canvases = page.locator('canvas');
-  const bbox = await canvases.first().boundingBox();
+for (const diff of diffsToClick) {
+  const bbox = await leftCanvas.boundingBox();
   if (bbox) {
-    const x = bbox.width * (0.2 + Math.random() * 0.6);
-    const y = bbox.height * (0.2 + Math.random() * 0.6);
-    await page.click('canvas', { position: { x, y } });
+    const clickX = bbox.x + bbox.width * diff.x;
+    const clickY = bbox.y + bbox.height * diff.y;
+    await page.mouse.click(clickX, clickY);
+    await page.waitForTimeout(300);
+  }
+}
+
+// Wait for timer to run
+await page.waitForTimeout(2000);
+
+// Screenshot 2: Playing with some found
+await page.screenshot({
+  path: 'screenshots/2-play.png',
+  fullPage: false,
+});
+console.log('Screenshot 2 taken: 2-play.png (cover)');
+
+// Click remaining differences to complete scene
+const remainingDiffs = [
+  { x: 0.5, y: 0.3 },
+  { x: 0.3, y: 0.5 },
+  { x: 0.55, y: 0.25 },
+];
+
+for (const diff of remainingDiffs) {
+  const bbox = await leftCanvas.boundingBox();
+  if (bbox) {
+    const clickX = bbox.x + bbox.width * diff.x;
+    const clickY = bbox.y + bbox.height * diff.y;
+    await page.mouse.click(clickX, clickY);
     await page.waitForTimeout(200);
   }
 }
 
+await page.waitForTimeout(500);
+
+// Screenshot 3: Scene complete overlay
 await page.screenshot({
-  path: 'screenshots/4-multiple.png',
+  path: 'screenshots/3-complete.png',
   fullPage: false,
 });
+console.log('Screenshot 3 taken: 3-complete.png');
 
-console.log('Screenshot 4 taken: 4-multiple.png');
+// Continue to next scene
+await page.click('button#nextBtn');
+await page.waitForTimeout(500);
+
+// Click a few in scene 2
+const scene2Diffs = [
+  { x: 0.85, y: 0.15 },
+  { x: 0.4, y: 0.58 },
+];
+
+for (const diff of scene2Diffs) {
+  const bbox = await leftCanvas.boundingBox();
+  if (bbox) {
+    const clickX = bbox.x + bbox.width * diff.x;
+    const clickY = bbox.y + bbox.height * diff.y;
+    await page.mouse.click(clickX, clickY);
+    await page.waitForTimeout(300);
+  }
+}
+
+// Screenshot 4: Scene 2 in progress
+await page.screenshot({
+  path: 'screenshots/4-scene2.png',
+  fullPage: false,
+});
+console.log('Screenshot 4 taken: 4-scene2.png');
 
 await browser.close();
 server.close();

@@ -9,6 +9,8 @@ export class Renderer {
     this.markerAnimTime = 0;
     this.crosshairPos = { x: 0, y: 0 };
     this.activeCrosshair = null;
+    this.hintTarget = null;
+    this.hintAnimTime = 0;
   }
 
   drawScene(scene, found) {
@@ -34,6 +36,17 @@ export class Renderer {
         this.drawFoundMarker(this.rightCtx, x, y, r);
       }
     });
+
+    if (this.hintTarget !== null && this.hintAnimTime < 2) {
+      const diff = scene.diffs[this.hintTarget];
+      if (diff) {
+        const x = diff.x * w;
+        const y = diff.y * h;
+        const r = diff.radius * w;
+        this.drawHintMarker(this.leftCtx, x, y, r);
+        this.drawHintMarker(this.rightCtx, x, y, r);
+      }
+    }
   }
 
   drawFoundMarker(ctx, x, y, r) {
@@ -52,8 +65,35 @@ export class Renderer {
     ctx.fill();
   }
 
+  drawHintMarker(ctx, x, y, r) {
+    const alpha = Math.max(0, 1 - this.hintAnimTime / 2);
+    const scale = 1 + this.hintAnimTime * 0.5;
+    
+    ctx.strokeStyle = `rgba(255, 255, 0, ${alpha * 0.8})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(x, y, r * scale, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    ctx.fillStyle = `rgba(255, 255, 0, ${alpha * 0.2})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r * scale, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  showHint(diffIdx) {
+    this.hintTarget = diffIdx;
+    this.hintAnimTime = 0;
+  }
+
   updateAnimation(delta) {
     this.markerAnimTime += delta;
+    if (this.hintTarget !== null) {
+      this.hintAnimTime += delta;
+      if (this.hintAnimTime >= 2) {
+        this.hintTarget = null;
+      }
+    }
   }
 
   drawCrosshair(canvas, x, y) {

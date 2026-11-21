@@ -133,7 +133,9 @@ class Game {
     });
 
     if (unFound.length > 0) {
+      const hint = unFound[Math.floor(Math.random() * unFound.length)];
       this.gameState.useHint();
+      this.renderer.showHint(hint);
       this.audioManager.playHintSound();
     }
   }
