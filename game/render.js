@@ -28,23 +28,27 @@ export class Renderer {
     found.forEach(diffIdx => {
       const diff = scene.diffs[diffIdx];
       if (diff) {
-        const x = diff.x * w;
-        const y = diff.y * h;
+        const leftX = diff.xLeft !== undefined ? diff.xLeft * w : diff.x * w;
+        const leftY = diff.yLeft !== undefined ? diff.yLeft * h : diff.y * h;
+        const rightX = diff.xRight !== undefined ? diff.xRight * w : diff.x * w;
+        const rightY = diff.yRight !== undefined ? diff.yRight * h : diff.y * h;
         const r = diff.radius * w;
         
-        this.drawFoundMarker(this.leftCtx, x, y, r);
-        this.drawFoundMarker(this.rightCtx, x, y, r);
+        this.drawFoundMarker(this.leftCtx, leftX, leftY, r);
+        this.drawFoundMarker(this.rightCtx, rightX, rightY, r);
       }
     });
 
     if (this.hintTarget !== null && this.hintAnimTime < 2) {
       const diff = scene.diffs[this.hintTarget];
       if (diff) {
-        const x = diff.x * w;
-        const y = diff.y * h;
+        const leftX = diff.xLeft !== undefined ? diff.xLeft * w : diff.x * w;
+        const leftY = diff.yLeft !== undefined ? diff.yLeft * h : diff.y * h;
+        const rightX = diff.xRight !== undefined ? diff.xRight * w : diff.x * w;
+        const rightY = diff.yRight !== undefined ? diff.yRight * h : diff.y * h;
         const r = diff.radius * w;
-        this.drawHintMarker(this.leftCtx, x, y, r);
-        this.drawHintMarker(this.rightCtx, x, y, r);
+        this.drawHintMarker(this.leftCtx, leftX, leftY, r);
+        this.drawHintMarker(this.rightCtx, rightX, rightY, r);
       }
     }
   }
@@ -58,8 +62,14 @@ export class Renderer {
     ctx.translate(x, y);
     ctx.scale(expand, expand);
     
+    ctx.strokeStyle = `rgba(0, 0, 0, ${pulse * 0.8})`;
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(0, 0, r + 10, 0, Math.PI * 2);
+    ctx.stroke();
+    
     ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
-    ctx.lineWidth = 8;
+    ctx.lineWidth = 7;
     ctx.beginPath();
     ctx.arc(0, 0, r + 10, 0, Math.PI * 2);
     ctx.stroke();
@@ -86,8 +96,14 @@ export class Renderer {
     ctx.save();
     ctx.translate(x, y);
     
+    ctx.strokeStyle = `rgba(0, 0, 0, ${alpha * 0.8})`;
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(0, 0, r * scale * expand, 0, Math.PI * 2);
+    ctx.stroke();
+    
     ctx.strokeStyle = `rgba(255, 255, 0, ${alpha * 0.9})`;
-    ctx.lineWidth = 8;
+    ctx.lineWidth = 7;
     ctx.beginPath();
     ctx.arc(0, 0, r * scale * expand, 0, Math.PI * 2);
     ctx.stroke();
