@@ -36,29 +36,76 @@ export class SceneArt {
       ctx.fillRect(i, h * 0.52, 15, 3);
     }
 
-    // Beach bottom extends to edge with details
+    // Beach bottom with detailed ground
     ctx.fillStyle = '#D2B48C';
     ctx.fillRect(0, h * 0.85, w, h * 0.15);
     
-    // Rocks and shells
-    ctx.fillStyle = '#8B7D6B';
-    for (let i = 0; i < 8; i++) {
-      const x = w * (0.1 + i * 0.11);
-      const y = h * (0.88 + Math.random() * 0.08);
-      const size = w * (0.015 + Math.random() * 0.01);
+    // Seaweed patches
+    ctx.fillStyle = '#2F4F2F';
+    for (let i = 0; i < 6; i++) {
+      const x = w * (0.08 + i * 0.16);
+      const y = h * 0.88;
+      for (let j = 0; j < 4; j++) {
+        const sx = x + (Math.random() - 0.5) * w * 0.03;
+        const sy = y + Math.random() * h * 0.08;
+        ctx.fillRect(sx, sy, 2, h * 0.04);
+      }
+    }
+    
+    // Rocks and pebbles
+    ctx.fillStyle = '#696969';
+    for (let i = 0; i < 15; i++) {
+      const x = w * (0.05 + Math.random() * 0.9);
+      const y = h * (0.87 + Math.random() * 0.1);
+      const size = w * (0.008 + Math.random() * 0.012);
       ctx.beginPath();
-      ctx.ellipse(x, y, size, size * 0.7, Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.ellipse(x, y, size, size * 0.8, Math.random() * Math.PI, 0, Math.PI * 2);
       ctx.fill();
     }
     
-    // Footprints
-    ctx.fillStyle = 'rgba(139, 125, 107, 0.3)';
-    for (let i = 0; i < 6; i++) {
-      const x = w * (0.15 + i * 0.12);
-      const y = h * (0.91 + (i % 2) * 0.03);
+    // Shells scattered
+    ctx.fillStyle = '#FFE4C4';
+    for (let i = 0; i < 10; i++) {
+      const x = w * (0.1 + Math.random() * 0.8);
+      const y = h * (0.88 + Math.random() * 0.09);
+      const size = w * (0.01 + Math.random() * 0.008);
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI);
+      ctx.fill();
+      ctx.strokeStyle = '#DEB887';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    
+    // Coral pieces
+    ctx.fillStyle = '#FF7F50';
+    for (let i = 0; i < 8; i++) {
+      const x = w * (0.15 + i * 0.1);
+      const y = h * (0.9 + Math.random() * 0.06);
+      ctx.beginPath();
+      ctx.arc(x, y, w * 0.006, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FF6347';
+      ctx.beginPath();
+      ctx.arc(x + w * 0.008, y - w * 0.01, w * 0.005, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FF7F50';
+    }
+    
+    // Footprints trail
+    ctx.fillStyle = 'rgba(139, 125, 107, 0.35)';
+    for (let i = 0; i < 8; i++) {
+      const x = w * (0.2 + i * 0.08);
+      const y = h * (0.91 + (i % 2) * 0.025);
       ctx.beginPath();
       ctx.ellipse(x, y, w * 0.012, w * 0.018, 0.3, 0, Math.PI * 2);
       ctx.fill();
+      // Toes
+      for (let t = 0; t < 4; t++) {
+        ctx.beginPath();
+        ctx.arc(x + w * (0.005 - t * 0.003), y - w * 0.015, w * 0.003, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     // Sun

@@ -62,17 +62,14 @@ body {
 
 .title-screen h1 {
   font-size: 3.5em;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+  color: #FFF;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.5);
 }
 
 .title-screen p {
   font-size: 1.5em;
-  color: #666;
+  color: #FFF;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .instructions {
