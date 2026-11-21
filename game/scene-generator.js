@@ -26,7 +26,7 @@ export class SceneGenerator {
         { x: 0.3, y: 0.5, radius: 0.05 }
       ],
       [
-        { x: 0.85, y: 0.15, radius: 0.05 },
+        { x: 0.85, y: 0.15, radius: 0.05, xLeft: 0.85, yLeft: 0.15, xRight: 0.15, yRight: 0.15 },
         { x: 0.5, y: 0.42, radius: 0.05 },
         { x: 0.35, y: 0.62, radius: 0.05 },
         { x: 0.4, y: 0.58, radius: 0.05 },
