@@ -86,6 +86,10 @@ class Game {
     this.gameState.updateHintCooldown(delta);
 
     const scene = this.scenes[this.gameState.currentScene];
+    const parTime = SCENES[this.gameState.currentScene]?.par || 60;
+    const remaining = scene.diffs.length - this.gameState.found.size;
+    
+    this.ui.updateGameStats(remaining, this.gameState.strikes, this.gameState.timeElapsed, parTime);
     this.renderer.drawScene(scene, this.gameState.found);
     this.renderer.updateAnimation(delta);
     this.inputHandler.drawCrosshair();

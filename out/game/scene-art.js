@@ -20,19 +20,23 @@ export class SceneArt {
     ctx.fillRect(0, 0, w, h * 0.5);
 
     // Sea
-    const seaGrad = ctx.createLinearGradient(0, h * 0.5, 0, h * 0.8);
+    const seaGrad = ctx.createLinearGradient(0, h * 0.5, 0, h * 0.85);
     seaGrad.addColorStop(0, '#1E90FF');
     seaGrad.addColorStop(1, '#006994');
     ctx.fillStyle = seaGrad;
-    ctx.fillRect(0, h * 0.5, w, h * 0.3);
+    ctx.fillRect(0, h * 0.5, w, h * 0.35);
 
     // Sand
     ctx.fillStyle = '#F4A460';
-    ctx.fillRect(0, h * 0.45, w, h * 0.1);
+    ctx.fillRect(0, h * 0.45, w, h * 0.15);
     ctx.fillStyle = '#DEB887';
     for (let i = 0; i < w; i += 30) {
-      ctx.fillRect(i, h * 0.48, 15, 3);
+      ctx.fillRect(i, h * 0.52, 15, 3);
     }
+
+    // Beach bottom extends to edge
+    ctx.fillStyle = '#D2B48C';
+    ctx.fillRect(0, h * 0.85, w, h * 0.15);
 
     // Sun
     const sunX = isLeft ? w * 0.85 : w * 0.15;
@@ -207,7 +211,7 @@ export class SceneArt {
     ctx.fillRect(0, h * 0.55, w, h * 0.05);
     ctx.fillStyle = '#5A9C0D';
     for (let i = 0; i < w; i += 15) {
-      ctx.fillRect(i, h * 0.6, 8, h * 0.03);
+      ctx.fillRect(i, h * 0.6, 8, h * 0.4);
     }
 
     // Sun
@@ -338,6 +342,10 @@ export class SceneArt {
     ctx.lineTo(w * 0.58, h * 0.2);
     ctx.lineTo(w * 0.5, h * 0.25);
     ctx.fill();
+
+    // Ground at bottom
+    ctx.fillStyle = '#2F4F2F';
+    ctx.fillRect(0, h * 0.7, w, h * 0.3);
 
     // Trees at base - layered
     for (let i = 0; i < 8; i++) {

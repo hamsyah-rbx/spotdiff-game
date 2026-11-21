@@ -7,19 +7,34 @@ export class UI {
 
   showTitleScreen(onStart) {
     this.root.innerHTML = `
-      <div class="game-container">
-        <div class="title-screen">
-          <h1>🔍 Spot the Difference</h1>
-          <p>Find all differences between the two panels!</p>
-          <div class="instructions">
-            <strong>How to Play:</strong><br>
-            Click on differences in either panel. You have ${GAME_CONFIG.MAX_WRONG_CLICKS} wrong clicks per scene.<br>
-            Use hints wisely (${GAME_CONFIG.MAX_HINTS} hints total). Press H for hint, P to pause, R to restart, M to mute.
-          </div>
-          <button class="btn" id="startBtn">Start Game</button>
+      <div class="game-container title-screen">
+        <h1>🔍 Spot the Difference</h1>
+        <p>Find all differences between the two panels!</p>
+        <div class="preview-panels">
+          <canvas id="previewLeft" width="300" height="240"></canvas>
+          <canvas id="previewRight" width="300" height="240"></canvas>
         </div>
+        <div class="instructions">
+          <strong>How to Play:</strong><br>
+          Click on differences in either panel. You have ${GAME_CONFIG.MAX_WRONG_CLICKS} wrong clicks per scene.<br>
+          Use hints wisely (${GAME_CONFIG.MAX_HINTS} hints total). Press H for hint, P to pause, R to restart, M to mute.
+        </div>
+        <button class="btn" id="startBtn">Start Game</button>
       </div>
     `;
+    
+    const previewLeft = document.getElementById('previewLeft');
+    const previewRight = document.getElementById('previewRight');
+    const ctxL = previewLeft.getContext('2d');
+    const ctxR = previewRight.getContext('2d');
+    
+    import('./scene-art.js').then(module => {
+      const art = new module.SceneArt();
+      if (art.scenes[0]) {
+        art.scenes[0].draw(ctxL, 300, 240, true);
+        art.scenes[0].draw(ctxR, 300, 240, false);
+      }
+    });
     
     document.getElementById('startBtn').addEventListener('click', onStart);
   }
@@ -40,15 +55,15 @@ export class UI {
           <div class="header-center">
             <div class="status-item">
               <span class="label">TO FIND</span>
-              <span class="value">${remaining}</span>
+              <span class="value" id="toFindValue">${remaining}</span>
             </div>
             <div class="status-item">
               <span class="label">TIME</span>
-              <span class="value ${timeElapsed > parTime * 0.8 ? 'warning' : ''}">${timerFormatted}</span>
+              <span class="value ${timeElapsed > parTime * 0.8 ? 'warning' : ''}" id="timerValue">${timerFormatted}</span>
             </div>
             <div class="status-item">
               <span class="label">STRIKES</span>
-              <span class="value">${strikes}/${GAME_CONFIG.MAX_WRONG_CLICKS}</span>
+              <span class="value" id="strikesValue">${strikes}/${GAME_CONFIG.MAX_WRONG_CLICKS}</span>
             </div>
           </div>
           <div class="header-right">
@@ -84,6 +99,23 @@ export class UI {
       rightCanvas: document.getElementById('rightCanvas'),
       dots: Array.from(document.querySelectorAll('.dot'))
     };
+  }
+
+  updateGameStats(remaining, strikes, timeElapsed, parTime) {
+    const toFindEl = document.getElementById('toFindValue');
+    const strikesEl = document.getElementById('strikesValue');
+    const timerEl = document.getElementById('timerValue');
+    
+    if (toFindEl) toFindEl.textContent = remaining;
+    if (strikesEl) strikesEl.textContent = `${strikes}/${GAME_CONFIG.MAX_WRONG_CLICKS}`;
+    if (timerEl) {
+      timerEl.textContent = this.formatTime(timeElapsed);
+      if (timeElapsed > parTime * 0.8) {
+        timerEl.classList.add('warning');
+      } else {
+        timerEl.classList.remove('warning');
+      }
+    }
   }
 
   updateIndicators(dots, found) {

@@ -37,12 +37,12 @@ await page.goto(`http://localhost:${PORT}`, { waitUntil: 'networkidle' });
 
 mkdirSync('screenshots', { recursive: true });
 
-// Screenshot 1: Title screen
+// Screenshot 0: Title screen
 await page.screenshot({
-  path: 'screenshots/1-title.png',
+  path: 'screenshots/4-title.png',
   fullPage: false,
 });
-console.log('Screenshot 1 taken: 1-title.png');
+console.log('Screenshot 4 taken: 4-title.png');
 
 // Start game
 await page.click('button#startBtn');
@@ -52,12 +52,14 @@ await page.waitForTimeout(500);
 const leftCanvas = page.locator('canvas').first();
 const rightCanvas = page.locator('canvas').nth(1);
 
+// Wait for timer to run a bit
+await page.waitForTimeout(3000);
+
 // Click on actual differences based on scene data
 const diffsToClick = [
   { x: 0.85, y: 0.15 },  // Sun
   { x: 0.65, y: 0.38 },  // Umbrella
   { x: 0.45, y: 0.58 },  // Sailboat
-  { x: 0.75, y: 0.52 },  // Starfish
 ];
 
 for (const diff of diffsToClick) {
@@ -66,25 +68,26 @@ for (const diff of diffsToClick) {
     const clickX = bbox.x + bbox.width * diff.x;
     const clickY = bbox.y + bbox.height * diff.y;
     await page.mouse.click(clickX, clickY);
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(400);
   }
 }
 
-// Wait for timer to run
+// Wait for timer to run more
 await page.waitForTimeout(2000);
 
-// Screenshot 2: Playing with some found
+// Screenshot 2: Playing with some found (COVER)
 await page.screenshot({
-  path: 'screenshots/2-play.png',
+  path: 'screenshots/1-play.png',
   fullPage: false,
 });
-console.log('Screenshot 2 taken: 2-play.png (cover)');
+console.log('Screenshot 1 taken: 1-play.png (cover)');
 
 // Click remaining differences to complete scene
 const remainingDiffs = [
   { x: 0.5, y: 0.3 },
   { x: 0.3, y: 0.5 },
   { x: 0.55, y: 0.25 },
+  { x: 0.75, y: 0.52 },
 ];
 
 for (const diff of remainingDiffs) {
@@ -101,10 +104,10 @@ await page.waitForTimeout(500);
 
 // Screenshot 3: Scene complete overlay
 await page.screenshot({
-  path: 'screenshots/3-complete.png',
+  path: 'screenshots/2-complete.png',
   fullPage: false,
 });
-console.log('Screenshot 3 taken: 3-complete.png');
+console.log('Screenshot 2 taken: 2-complete.png');
 
 // Continue to next scene
 await page.click('button#nextBtn');
@@ -128,10 +131,10 @@ for (const diff of scene2Diffs) {
 
 // Screenshot 4: Scene 2 in progress
 await page.screenshot({
-  path: 'screenshots/4-scene2.png',
+  path: 'screenshots/3-scene2.png',
   fullPage: false,
 });
-console.log('Screenshot 4 taken: 4-scene2.png');
+console.log('Screenshot 3 taken: 3-scene2.png');
 
 await browser.close();
 server.close();
