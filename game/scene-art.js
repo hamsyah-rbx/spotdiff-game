@@ -202,7 +202,7 @@ export class SceneArt {
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, w, h * 0.6);
 
-    // Ground
+    // Ground base
     ctx.fillStyle = '#8B6F47';
     ctx.fillRect(0, h * 0.6, w, h * 0.4);
 
@@ -211,9 +211,15 @@ export class SceneArt {
     ctx.fillRect(0, h * 0.58, w, h * 0.05);
     ctx.fillStyle = '#4A7C0C';
     ctx.fillRect(0, h * 0.55, w, h * 0.05);
+    
+    // Grass tufts instead of vertical lines
     ctx.fillStyle = '#5A9C0D';
-    for (let i = 0; i < w; i += 15) {
-      ctx.fillRect(i, h * 0.6, 8, h * 0.4);
+    for (let i = 0; i < w; i += 20) {
+      for (let j = 0; j < 8; j++) {
+        const x = i + Math.random() * 15;
+        const y = h * (0.6 + j * 0.05) + Math.random() * 10;
+        ctx.fillRect(x, y, 3, 8);
+      }
     }
 
     // Sun
