@@ -117,10 +117,22 @@ class Game {
       } else {
         this.gameState.addStrike();
         this.audioManager.playErrorSound();
+        this.shakeScreen();
       }
     } else {
       this.gameState.addStrike();
       this.audioManager.playErrorSound();
+      this.shakeScreen();
+    }
+  }
+
+  shakeScreen() {
+    const container = document.querySelector('.game-container');
+    if (container) {
+      container.style.animation = 'shake 0.3s';
+      setTimeout(() => {
+        container.style.animation = '';
+      }, 300);
     }
   }
 

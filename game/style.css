@@ -293,3 +293,13 @@ canvas {
 .scene-complete .btn {
   margin-top: 20px;
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.warning {
+  animation: pulse 0.5s infinite;
+}

@@ -50,35 +50,54 @@ export class Renderer {
   }
 
   drawFoundMarker(ctx, x, y, r) {
-    const time = this.markerAnimTime % 1;
-    const pulse = Math.sin(time * Math.PI * 2) * 0.3 + 0.7;
+    const time = this.markerAnimTime % 2;
+    const pulse = 0.8 + Math.sin(time * Math.PI) * 0.2;
+    const expand = Math.min(time * 2, 1);
+    
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(expand, expand);
     
     ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.arc(x, y, r + 5, 0, Math.PI * 2);
+    ctx.arc(0, 0, r + 8, 0, Math.PI * 2);
     ctx.stroke();
     
-    ctx.fillStyle = 'rgba(255, 215, 0, 0.1)';
+    ctx.strokeStyle = `rgba(255, 215, 0, ${pulse * 0.5})`;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.arc(0, 0, r + 15, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.15)';
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
     ctx.fill();
+    
+    ctx.restore();
   }
 
   drawHintMarker(ctx, x, y, r) {
     const alpha = Math.max(0, 1 - this.hintAnimTime / 2);
-    const scale = 1 + this.hintAnimTime * 0.5;
+    const scale = 1 + Math.sin(this.hintAnimTime * 5) * 0.1;
+    const expand = 1 + this.hintAnimTime * 0.3;
     
-    ctx.strokeStyle = `rgba(255, 255, 0, ${alpha * 0.8})`;
-    ctx.lineWidth = 3;
+    ctx.save();
+    ctx.translate(x, y);
+    
+    ctx.strokeStyle = `rgba(255, 255, 0, ${alpha * 0.9})`;
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(x, y, r * scale, 0, Math.PI * 2);
+    ctx.arc(0, 0, r * scale * expand, 0, Math.PI * 2);
     ctx.stroke();
     
-    ctx.fillStyle = `rgba(255, 255, 0, ${alpha * 0.2})`;
+    ctx.fillStyle = `rgba(255, 255, 0, ${alpha * 0.3})`;
     ctx.beginPath();
-    ctx.arc(x, y, r * scale, 0, Math.PI * 2);
+    ctx.arc(0, 0, r * scale, 0, Math.PI * 2);
     ctx.fill();
+    
+    ctx.restore();
   }
 
   showHint(diffIdx) {
