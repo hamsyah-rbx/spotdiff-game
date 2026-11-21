@@ -48,8 +48,8 @@ for (const [x, y] of [[0.15, 0.15], [0.5, 0.3], [0.65, 0.38]]) {
   await page.waitForTimeout(500);
 }
 await page.waitForTimeout(1500);
-await page.screenshot({ path: 'screenshots/1-play.png', type: 'jpeg', quality: 70 });
-console.log('1-play.png (Beach)');
+await page.screenshot({ path: 'screenshots/1-play.jpg', type: 'jpeg', quality: 70 });
+console.log('1-play.jpg (Beach)');
 
 // Complete Beach: click remaining 4
 for (const [x, y] of [[0.45, 0.58], [0.75, 0.52], [0.55, 0.25], [0.3, 0.5]]) {
@@ -68,8 +68,8 @@ for (const [x, y] of [[0.85, 0.15], [0.5, 0.42], [0.35, 0.62]]) {
   await page.waitForTimeout(400);
 }
 await page.waitForTimeout(1500);
-await page.screenshot({ path: 'screenshots/2-forest.png', type: 'jpeg', quality: 70 });
-console.log('2-forest.png (Forest)');
+await page.screenshot({ path: 'screenshots/2-forest.jpg', type: 'jpeg', quality: 70 });
+console.log('2-forest.jpg (Forest)');
 
 // Complete Forest: click remaining 4
 for (const [x, y] of [[0.4, 0.58], [0.62, 0.3], [0.55, 0.56], [0.25, 0.22]]) {
@@ -98,8 +98,8 @@ for (const [x, y] of [[0.18, 0.43], [0.52, 0.43], [0.25, 0.75], [0.35, 0.45]]) {
   await page.waitForTimeout(400);
 }
 await page.waitForTimeout(1500);
-await page.screenshot({ path: 'screenshots/3-lantern.png', type: 'jpeg', quality: 70 });
-console.log('3-lantern.png (Lantern Market)');
+await page.screenshot({ path: 'screenshots/3-lantern.jpg', type: 'jpeg', quality: 70 });
+console.log('3-lantern.jpg (Lantern Market)');
 
 // Complete Lantern Market
 for (const [x, y] of [[0.69, 0.46], [0.86, 0.44], [0.15, 0.68]]) {
@@ -118,8 +118,8 @@ for (const [x, y] of [[0.25, 0.3], [0.5, 0.2], [0.08, 0.82]]) {
   await page.waitForTimeout(400);
 }
 await page.waitForTimeout(1500);
-await page.screenshot({ path: 'screenshots/4-clockwork.png', type: 'jpeg', quality: 70 });
-console.log('4-clockwork.png (Clockwork Garden)');
+await page.screenshot({ path: 'screenshots/4-clockwork.jpg', type: 'jpeg', quality: 70 });
+console.log('4-clockwork.jpg (Clockwork Garden)');
 
 await browser.close();
 server.close();

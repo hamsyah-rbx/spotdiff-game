@@ -43,8 +43,8 @@ body::before {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 15px;
-  gap: 10px;
+  padding: 10px;
+  gap: 8px;
 }
 
 .title-screen, .end-screen {
@@ -111,12 +111,13 @@ body::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  padding: 15px 25px;
+  gap: 15px;
+  padding: 10px 20px;
   background: rgba(0, 0, 0, 0.85);
-  border-radius: 15px;
+  border-radius: 12px;
   border: 2px solid rgba(255, 215, 0, 0.4);
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.7);
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -127,7 +128,7 @@ body::before {
 }
 
 .header-left h2 {
-  font-size: 1.1em;
+  font-size: 1em;
   color: #FFD700;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   margin: 0;
@@ -139,7 +140,7 @@ body::before {
 }
 
 .strike-icon {
-  font-size: 1.8em;
+  font-size: 1.5em;
   transition: all 0.3s ease-out;
   filter: drop-shadow(0 0 8px rgba(255, 107, 107, 0.8));
 }
@@ -190,7 +191,7 @@ body::before {
 }
 
 .status-item .value.main-counter {
-  font-size: 4em;
+  font-size: 3em;
   text-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 215, 0, 0.5);
 }
 
@@ -228,7 +229,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 1.4em;
+  font-size: 1.1em;
   color: #FFF;
   font-weight: bold;
 }
@@ -258,13 +259,13 @@ body::before {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12px 18px;
-  font-size: 1em;
-  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.9em;
+  border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
-  min-width: 90px;
+  min-width: 75px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
   font-weight: bold;
 }
@@ -298,26 +299,30 @@ body::before {
   display: flex;
   gap: 15px;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   flex: 1;
   overflow: hidden;
   padding: 0 10px;
+  min-height: 0;
 }
 
 .panel-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  height: 100%;
+  justify-content: center;
 }
 
 .panel-label {
   font-weight: bold;
-  font-size: 1em;
+  font-size: 0.85em;
   color: #FFD700;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
+  flex-shrink: 0;
 }
 
 canvas {
@@ -326,6 +331,8 @@ canvas {
   background: white;
   cursor: crosshair;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.3);
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .indicators {
@@ -333,16 +340,17 @@ canvas {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  height: 55px;
+  height: 45px;
   background: rgba(0, 0, 0, 0.85);
-  border-radius: 30px;
-  padding: 0 35px;
+  border-radius: 25px;
+  padding: 0 30px;
   border: 2px solid rgba(255, 215, 0, 0.4);
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
+  flex-shrink: 0;
 }
 
 .indicators-text {
-  font-size: 1.3em;
+  font-size: 1.1em;
   font-weight: bold;
   color: #FFD700;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
@@ -355,11 +363,11 @@ canvas {
 }
 
 .dot {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
-  border: 3px solid #444;
+  border: 2px solid #444;
   transition: all 0.3s ease-out;
   position: relative;
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -368,7 +376,8 @@ canvas {
 .dot.found {
   background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
   border-color: #FFD700;
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.9), inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  border-width: 2px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), inset 0 2px 5px rgba(255, 255, 255, 0.3);
   animation: dotPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 

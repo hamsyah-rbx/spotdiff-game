@@ -59,15 +59,15 @@ export class Renderer {
     ctx.scale(expand, expand);
     
     ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 8;
     ctx.beginPath();
-    ctx.arc(0, 0, r + 8, 0, Math.PI * 2);
+    ctx.arc(0, 0, r + 10, 0, Math.PI * 2);
     ctx.stroke();
     
     ctx.strokeStyle = `rgba(255, 215, 0, ${pulse * 0.5})`;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(0, 0, r + 15, 0, Math.PI * 2);
+    ctx.arc(0, 0, r + 18, 0, Math.PI * 2);
     ctx.stroke();
     
     ctx.fillStyle = 'rgba(255, 215, 0, 0.15)';
@@ -87,7 +87,7 @@ export class Renderer {
     ctx.translate(x, y);
     
     ctx.strokeStyle = `rgba(255, 255, 0, ${alpha * 0.9})`;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 8;
     ctx.beginPath();
     ctx.arc(0, 0, r * scale * expand, 0, Math.PI * 2);
     ctx.stroke();
