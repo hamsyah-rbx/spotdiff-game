@@ -1,7 +1,9 @@
 import { buildDossier } from './vendor/makefun-game.ts';
 import { writeFileSync, copyFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const here = fileURLToPath(new URL('.', import.meta.url));
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
 
 function copyDir(src: string, dest: string) {
@@ -18,8 +20,8 @@ function copyDir(src: string, dest: string) {
   });
 }
 
-copyDir('game', join(outputDir, 'game'));
-copyDir('screenshots', join(outputDir, 'screenshots'));
+copyDir(join(here, 'game'), join(outputDir, 'game'));
+copyDir(join(here, 'screenshots'), join(outputDir, 'screenshots'));
 
 const dossier = buildDossier(outputDir, {
   text_max_bytes: 163840,
