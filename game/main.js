@@ -114,6 +114,7 @@ class Game {
         this.gameState.findDifference(found);
         this.audioManager.playFoundSound();
         this.updateIndicators();
+        this.showFloatingText(x, y, isLeft);
       } else {
         this.gameState.addStrike();
         this.audioManager.playErrorSound();
@@ -126,14 +127,41 @@ class Game {
     }
   }
 
+  showFloatingText(x, y, isLeft) {
+    const canvas = isLeft ? document.getElementById('leftCanvas') : document.getElementById('rightCanvas');
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const floatText = document.createElement('div');
+    floatText.className = 'found-text';
+    floatText.textContent = '+1';
+    floatText.style.left = `${rect.left + x * canvas.width}px`;
+    floatText.style.top = `${rect.top + y * canvas.height}px`;
+    
+    document.body.appendChild(floatText);
+    
+    setTimeout(() => {
+      floatText.remove();
+    }, 1000);
+  }
+
   shakeScreen() {
     const container = document.querySelector('.game-container');
+    const canvases = document.querySelectorAll('canvas');
+    
     if (container) {
-      container.style.animation = 'shake 0.3s';
+      container.style.animation = 'shake 0.4s';
       setTimeout(() => {
         container.style.animation = '';
-      }, 300);
+      }, 400);
     }
+    
+    canvases.forEach(canvas => {
+      canvas.classList.add('flash-red');
+      setTimeout(() => {
+        canvas.classList.remove('flash-red');
+      }, 400);
+    });
   }
 
   handleHint() {

@@ -109,7 +109,7 @@ export class SceneArt {
     }
 
     // Sun
-    const sunX = isLeft ? w * 0.85 : w * 0.15;
+    const sunX = isLeft ? w * 0.15 : w * 0.85;
     const sunGrad = ctx.createRadialGradient(sunX, h * 0.15, 0, sunX, h * 0.15, w * 0.1);
     sunGrad.addColorStop(0, '#FFD700');
     sunGrad.addColorStop(1, '#FFA500');

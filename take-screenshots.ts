@@ -35,39 +35,44 @@ await page.goto(`http://localhost:${PORT}`, { waitUntil: 'networkidle' });
 
 mkdirSync('screenshots', { recursive: true });
 
-// Title screenshot
-await page.waitForTimeout(2000);
-await page.screenshot({ path: 'screenshots/4-title.jpg', type: 'jpeg', quality: 75 });
-console.log('4-title.jpg');
-
 // Start game
 await page.click('button#startBtn');
-await page.waitForTimeout(3000);
+await page.waitForTimeout(2000);
 
 const leftCanvas = page.locator('canvas').first();
 
-// Beach scene: click 3 diffs
-for (const [x, y] of [[0.85, 0.15], [0.65, 0.38], [0.45, 0.58]]) {
+// Beach scene: click 3 diffs (sun, palm tree, crab)
+for (const [x, y] of [[0.15, 0.15], [0.5, 0.3], [0.65, 0.38]]) {
+  const bbox = await leftCanvas.boundingBox();
+  if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
+  await page.waitForTimeout(500);
+}
+await page.waitForTimeout(1500);
+await page.screenshot({ path: 'screenshots/1-play.png', type: 'jpeg', quality: 70 });
+console.log('1-play.png (Beach)');
+
+// Complete Beach: click remaining 4
+for (const [x, y] of [[0.45, 0.58], [0.75, 0.52], [0.55, 0.25], [0.3, 0.5]]) {
+  const bbox = await leftCanvas.boundingBox();
+  if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
+  await page.waitForTimeout(300);
+}
+await page.waitForTimeout(2000);
+await page.getByRole('button', { name: /next/i }).click();
+await page.waitForTimeout(1500);
+
+// Forest: click 3 diffs
+for (const [x, y] of [[0.85, 0.15], [0.5, 0.42], [0.35, 0.62]]) {
   const bbox = await leftCanvas.boundingBox();
   if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
   await page.waitForTimeout(400);
 }
-await page.waitForTimeout(2000);
-await page.screenshot({ path: 'screenshots/1-play.png' });
-console.log('1-play.png');
-
-// Complete Beach: click all 7
-for (const [x, y] of [[0.5, 0.3], [0.75, 0.52], [0.55, 0.25], [0.3, 0.5]]) {
-  const bbox = await leftCanvas.boundingBox();
-  if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
-  await page.waitForTimeout(200);
-}
 await page.waitForTimeout(1500);
-await page.getByRole('button', { name: /next/i }).click();
-await page.waitForTimeout(1000);
+await page.screenshot({ path: 'screenshots/2-forest.png', type: 'jpeg', quality: 70 });
+console.log('2-forest.png (Forest)');
 
-// Forest: click all 7
-for (const [x, y] of [[0.85, 0.15], [0.5, 0.42], [0.35, 0.62], [0.4, 0.58], [0.62, 0.3], [0.55, 0.56], [0.25, 0.22]]) {
+// Complete Forest: click remaining 4
+for (const [x, y] of [[0.4, 0.58], [0.62, 0.3], [0.55, 0.56], [0.25, 0.22]]) {
   const bbox = await leftCanvas.boundingBox();
   if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
   await page.waitForTimeout(150);
@@ -86,19 +91,18 @@ await page.waitForTimeout(1500);
 await page.getByRole('button', { name: /next/i }).click();
 await page.waitForTimeout(1000);
 
-// Lantern Market: click 3 diffs
-await page.waitForTimeout(2000);
-for (const [x, y] of [[0.18, 0.43], [0.52, 0.43], [0.25, 0.75]]) {
+// Lantern Market: click 4 diffs
+for (const [x, y] of [[0.18, 0.43], [0.52, 0.43], [0.25, 0.75], [0.35, 0.45]]) {
   const bbox = await leftCanvas.boundingBox();
   if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
   await page.waitForTimeout(400);
 }
 await page.waitForTimeout(1500);
-await page.screenshot({ path: 'screenshots/2-lantern.png' });
-console.log('2-lantern.png');
+await page.screenshot({ path: 'screenshots/3-lantern.png', type: 'jpeg', quality: 70 });
+console.log('3-lantern.png (Lantern Market)');
 
 // Complete Lantern Market
-for (const [x, y] of [[0.35, 0.45], [0.69, 0.46], [0.86, 0.44], [0.15, 0.68]]) {
+for (const [x, y] of [[0.69, 0.46], [0.86, 0.44], [0.15, 0.68]]) {
   const bbox = await leftCanvas.boundingBox();
   if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
   await page.waitForTimeout(150);
@@ -108,15 +112,14 @@ await page.getByRole('button', { name: /next/i }).click();
 await page.waitForTimeout(1000);
 
 // Clockwork Garden: click 3 diffs
-await page.waitForTimeout(2000);
 for (const [x, y] of [[0.25, 0.3], [0.5, 0.2], [0.08, 0.82]]) {
   const bbox = await leftCanvas.boundingBox();
   if (bbox) await page.mouse.click(bbox.x + bbox.width * x, bbox.y + bbox.height * y);
   await page.waitForTimeout(400);
 }
 await page.waitForTimeout(1500);
-await page.screenshot({ path: 'screenshots/3-clockwork.png' });
-console.log('3-clockwork.png');
+await page.screenshot({ path: 'screenshots/4-clockwork.png', type: 'jpeg', quality: 70 });
+console.log('4-clockwork.png (Clockwork Garden)');
 
 await browser.close();
 server.close();

@@ -17,7 +17,7 @@ export class SceneGenerator {
   generateDiffs(sceneIdx) {
     const diffs = [
       [
-        { x: 0.85, y: 0.15, radius: 0.08 },
+        { x: 0.15, y: 0.15, radius: 0.08 },
         { x: 0.5, y: 0.3, radius: 0.07 },
         { x: 0.65, y: 0.38, radius: 0.07 },
         { x: 0.45, y: 0.58, radius: 0.06 },

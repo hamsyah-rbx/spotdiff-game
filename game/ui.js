@@ -45,32 +45,52 @@ export class UI {
     
     const timerFormatted = this.formatTime(timeElapsed);
     const parFormatted = this.formatTime(parTime);
+    const timerPercent = Math.min(100, (timeElapsed / parTime) * 100);
+    
+    const totalDiffs = 7;
+    const found = totalDiffs - remaining;
+    
+    // Generate strikes icons (hearts)
+    const strikesHTML = [...Array(GAME_CONFIG.MAX_WRONG_CLICKS)].map((_, i) => {
+      const isLost = i < strikes;
+      return `<div class="strike-icon ${isLost ? 'lost' : 'active'}" id="strike-${i}">❤️</div>`;
+    }).join('');
     
     this.root.innerHTML = `
       <div class="game-container">
         <div class="game-header">
           <div class="header-left">
             <h2>Scene ${sceneIdx + 1}/${SCENES.length}</h2>
+            <div class="strikes-container">
+              ${strikesHTML}
+            </div>
           </div>
+          
           <div class="header-center">
-            <div class="status-item">
+            <div class="status-item main">
+              <span class="value main-counter" id="toFindValue">${remaining}</span>
               <span class="label">TO FIND</span>
-              <span class="value" id="toFindValue">${remaining}</span>
-            </div>
-            <div class="status-item">
-              <span class="label">TIME</span>
-              <span class="value ${timeElapsed > parTime * 0.8 ? 'warning' : ''}" id="timerValue">${timerFormatted}</span>
-            </div>
-            <div class="status-item">
-              <span class="label">STRIKES</span>
-              <span class="value" id="strikesValue">${strikes}/${GAME_CONFIG.MAX_WRONG_CLICKS}</span>
             </div>
           </div>
+          
           <div class="header-right">
+            <div class="timer-container">
+              <div class="timer-display">
+                <span id="timerValue">${timerFormatted}</span>
+                <span class="timer-par">/ ${parFormatted}</span>
+              </div>
+              <div class="timer-bar">
+                <div class="timer-bar-fill" id="timerBarFill" style="width: ${timerPercent}%"></div>
+              </div>
+            </div>
             <button class="btn-small" id="hintBtn" ${hintsLeft === 0 ? 'disabled' : ''}>
               💡 ${hintCooldown > 0 ? hintCooldown : 'Hint'}
+              <span class="key-hint">H</span>
             </button>
-            <button class="btn-small" id="pauseBtn">⏸</button>
+            <button class="btn-small" id="pauseBtn">
+              ⏸
+              <span class="key-hint">P</span>
+            </button>
           </div>
         </div>
 
@@ -86,7 +106,10 @@ export class UI {
         </div>
 
         <div class="indicators">
-          ${[...Array(7)].map((_, i) => `<div class="dot" id="dot-${i}"></div>`).join('')}
+          <span class="indicators-text" id="foundText">${found} / ${totalDiffs} found</span>
+          <div class="dots-container">
+            ${[...Array(totalDiffs)].map((_, i) => `<div class="dot" id="dot-${i}"></div>`).join('')}
+          </div>
         </div>
       </div>
     `;
@@ -103,17 +126,54 @@ export class UI {
 
   updateGameStats(remaining, strikes, timeElapsed, parTime) {
     const toFindEl = document.getElementById('toFindValue');
-    const strikesEl = document.getElementById('strikesValue');
     const timerEl = document.getElementById('timerValue');
+    const timerBarFill = document.getElementById('timerBarFill');
+    const foundTextEl = document.getElementById('foundText');
     
-    if (toFindEl) toFindEl.textContent = remaining;
-    if (strikesEl) strikesEl.textContent = `${strikes}/${GAME_CONFIG.MAX_WRONG_CLICKS}`;
+    const totalDiffs = 7;
+    const found = totalDiffs - remaining;
+    
+    if (toFindEl) {
+      const oldValue = parseInt(toFindEl.textContent);
+      toFindEl.textContent = remaining;
+      // Trigger pulse animation on change
+      if (oldValue !== remaining) {
+        toFindEl.style.animation = 'none';
+        setTimeout(() => {
+          toFindEl.style.animation = 'countPulse 0.4s ease-out';
+        }, 10);
+      }
+    }
+    
     if (timerEl) {
       timerEl.textContent = this.formatTime(timeElapsed);
       if (timeElapsed > parTime * 0.8) {
         timerEl.classList.add('warning');
       } else {
         timerEl.classList.remove('warning');
+      }
+    }
+    
+    if (timerBarFill) {
+      const timerPercent = Math.min(100, (timeElapsed / parTime) * 100);
+      timerBarFill.style.width = `${timerPercent}%`;
+    }
+    
+    if (foundTextEl) {
+      foundTextEl.textContent = `${found} / ${totalDiffs} found`;
+    }
+    
+    // Update strike icons
+    for (let i = 0; i < GAME_CONFIG.MAX_WRONG_CLICKS; i++) {
+      const strikeEl = document.getElementById(`strike-${i}`);
+      if (strikeEl) {
+        if (i < strikes) {
+          strikeEl.classList.remove('active');
+          strikeEl.classList.add('lost');
+        } else {
+          strikeEl.classList.remove('lost');
+          strikeEl.classList.add('active');
+        }
       }
     }
   }
