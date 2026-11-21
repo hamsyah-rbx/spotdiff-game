@@ -6,66 +6,61 @@ export class Renderer {
     this.rightCanvas = canvases[1];
     this.leftCtx = this.leftCanvas.getContext('2d');
     this.rightCtx = this.rightCanvas.getContext('2d');
+    this.markerAnimTime = 0;
+    this.crosshairPos = { x: 0, y: 0 };
+    this.activeCrosshair = null;
   }
 
-  drawScene(scene, gameState) {
-    this.clearCanvases();
-    
-    const w = GAME_CONFIG.CANVAS_WIDTH;
-    const h = GAME_CONFIG.CANVAS_HEIGHT;
-    
-    scene.draw(this.leftCtx, w, h, true);
-    scene.draw(this.rightCtx, w, h, false);
-    
-    this.drawFoundMarkers(scene, gameState);
-  }
-
-  clearCanvases() {
+  drawScene(scene, found) {
     const w = GAME_CONFIG.CANVAS_WIDTH;
     const h = GAME_CONFIG.CANVAS_HEIGHT;
     
     this.leftCtx.fillStyle = 'white';
     this.leftCtx.fillRect(0, 0, w, h);
-    
     this.rightCtx.fillStyle = 'white';
     this.rightCtx.fillRect(0, 0, w, h);
-  }
-
-  drawFoundMarkers(scene, gameState) {
-    const w = GAME_CONFIG.CANVAS_WIDTH;
-    const h = GAME_CONFIG.CANVAS_HEIGHT;
     
-    for (const diffIdx of gameState.found) {
-      if (diffIdx < scene.diffs.length) {
-        const diff = scene.diffs[diffIdx];
+    scene.draw(this.leftCtx, w, h, true);
+    scene.draw(this.rightCtx, w, h, false);
+    
+    found.forEach(diffIdx => {
+      const diff = scene.diffs[diffIdx];
+      if (diff) {
         const x = diff.x * w;
         const y = diff.y * h;
         const r = diff.radius * w;
         
-        this.drawMarker(this.leftCtx, x, y, r);
-        this.drawMarker(this.rightCtx, x, y, r);
+        this.drawFoundMarker(this.leftCtx, x, y, r);
+        this.drawFoundMarker(this.rightCtx, x, y, r);
       }
-    }
+    });
   }
 
-  drawMarker(ctx, x, y, r) {
-    ctx.strokeStyle = '#00FF00';
-    ctx.lineWidth = 3;
+  drawFoundMarker(ctx, x, y, r) {
+    const time = this.markerAnimTime % 1;
+    const pulse = Math.sin(time * Math.PI * 2) * 0.3 + 0.7;
+    
+    ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.arc(x, y, r + 5, 0, Math.PI * 2);
     ctx.stroke();
     
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.1)';
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
   }
 
+  updateAnimation(delta) {
+    this.markerAnimTime += delta;
+  }
+
   drawCrosshair(canvas, x, y) {
     const ctx = canvas === this.leftCanvas ? this.leftCtx : this.rightCtx;
-    const size = 15;
+    const size = 12;
     
-    ctx.strokeStyle = '#FF0000';
+    ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
     ctx.lineWidth = 2;
     
     ctx.beginPath();

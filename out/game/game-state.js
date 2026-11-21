@@ -8,9 +8,9 @@ export class GameState {
   reset() {
     this.currentScene = 0;
     this.found = new Set();
-    this.wrongClicks = 0;
+    this.strikes = 0;
     this.timeElapsed = 0;
-    this.hintUsed = 0;
+    this.hintsUsed = 0;
     this.hintCooldown = 0;
     this.isPaused = false;
     this.isMuted = false;
@@ -23,9 +23,9 @@ export class GameState {
     this.gameStarted = true;
     this.currentScene = 0;
     this.found = new Set();
-    this.wrongClicks = 0;
+    this.strikes = 0;
     this.timeElapsed = 0;
-    this.hintUsed = 0;
+    this.hintsUsed = 0;
     this.hintCooldown = 0;
     this.totalScore = 0;
     this.sceneScores = [];
@@ -39,16 +39,16 @@ export class GameState {
     return this.found.size === totalDiffs;
   }
 
-  addWrongClick() {
-    this.wrongClicks++;
+  addStrike() {
+    this.strikes++;
   }
 
   canUseHint() {
-    return this.hintUsed < GAME_CONFIG.MAX_HINTS && this.hintCooldown === 0;
+    return this.hintsUsed < GAME_CONFIG.MAX_HINTS && this.hintCooldown === 0;
   }
 
   useHint() {
-    this.hintUsed++;
+    this.hintsUsed++;
     this.hintCooldown = GAME_CONFIG.HINT_COOLDOWN;
   }
 
@@ -67,13 +67,17 @@ export class GameState {
   nextScene() {
     this.currentScene++;
     this.found = new Set();
-    this.wrongClicks = 0;
-    this.hintUsed = 0;
+    this.strikes = 0;
+    this.hintsUsed = 0;
     this.hintCooldown = 0;
   }
 
   saveSceneScore(score) {
     this.sceneScores.push(score);
     this.totalScore += score;
+  }
+
+  hasGameOver() {
+    return this.strikes >= GAME_CONFIG.MAX_WRONG_CLICKS;
   }
 }

@@ -10,7 +10,7 @@ export class InputHandler {
     this.onMute = onMute;
     
     this.crosshairCanvas = null;
-    this.crosshairPos = null;
+    this.crosshairPos = { x: 0, y: 0 };
     
     this.setupCanvasListeners();
     this.setupKeyboardListeners();
@@ -21,7 +21,7 @@ export class InputHandler {
       canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
       canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
       canvas.addEventListener('mouseleave', () => {
-        this.crosshairPos = null;
+        this.crosshairCanvas = null;
       });
     });
   }
@@ -65,11 +65,11 @@ export class InputHandler {
     });
   }
 
-  getCheckDifferences(scene, x, y, isLeft) {
+  getCheckDifferences(scene, x, y) {
     const w = GAME_CONFIG.CANVAS_WIDTH;
     const h = GAME_CONFIG.CANVAS_HEIGHT;
     
-    const clickRadius = 30;
+    const clickRadius = 35;
     const results = [];
     
     scene.diffs.forEach((diff, idx) => {
@@ -87,7 +87,7 @@ export class InputHandler {
   }
 
   drawCrosshair() {
-    if (this.crosshairPos && this.crosshairCanvas) {
+    if (this.crosshairCanvas) {
       this.renderer.drawCrosshair(this.crosshairCanvas, this.crosshairPos.x, this.crosshairPos.y);
     }
   }

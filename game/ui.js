@@ -9,15 +9,12 @@ export class UI {
     this.root.innerHTML = `
       <div class="game-container">
         <div class="title-screen">
-          <h1>🎯 Treasure Hunt Diff</h1>
-          <p>Find all the differences between two treasure scenes!</p>
+          <h1>🔍 Spot the Difference</h1>
+          <p>Find all differences between the two panels!</p>
           <div class="instructions">
             <strong>How to Play:</strong><br>
-            Spot differences and click on them to mark them.<br>
-            You have ${GAME_CONFIG.MAX_WRONG_CLICKS} wrong clicks per scene.<br>
-            Use hints wisely (${GAME_CONFIG.MAX_HINTS} hints, H key to use).<br>
-            <br>
-            <strong>Controls:</strong> H = Hint, P = Pause, R = Restart, M = Mute
+            Click on differences in either panel. You have ${GAME_CONFIG.MAX_WRONG_CLICKS} wrong clicks per scene.<br>
+            Use hints wisely (${GAME_CONFIG.MAX_HINTS} hints total). Press H for hint, P to pause, R to restart, M to mute.
           </div>
           <button class="btn" id="startBtn">Start Game</button>
         </div>
@@ -27,62 +24,76 @@ export class UI {
     document.getElementById('startBtn').addEventListener('click', onStart);
   }
 
-  showGameScreen(scene, gameState, onGameAction) {
-    const sceneIdx = gameState.currentScene;
-    const remaining = scene.diffs.length - gameState.found.size;
-    const hintCooldown = Math.ceil(gameState.hintCooldown);
-    const timerClass = gameState.timeElapsed > scene.par * 0.8 ? 'timer warning' : 'timer';
+  showGameScreen(sceneIdx, remaining, strikes, timeElapsed, parTime, onGameAction) {
+    const hintCooldown = onGameAction._hintCooldown || 0;
+    const hintsLeft = onGameAction._hintsLeft || 0;
+    
+    const timerFormatted = this.formatTime(timeElapsed);
+    const parFormatted = this.formatTime(parTime);
     
     this.root.innerHTML = `
       <div class="game-container">
-        <h2>${scene.name} (Scene ${sceneIdx + 1}/${SCENES.length})</h2>
-        
-        <div class="stats">
-          <div class="stat-item">
-            <span class="stat-label">Found</span>
-            <span>${gameState.found.size}/${scene.diffs.length}</span>
+        <div class="game-header">
+          <div class="header-left">
+            <h2>Scene ${sceneIdx + 1}/${SCENES.length}</h2>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Remaining</span>
-            <span>${remaining}</span>
+          <div class="header-center">
+            <div class="status-item">
+              <span class="label">TO FIND</span>
+              <span class="value">${remaining}</span>
+            </div>
+            <div class="status-item">
+              <span class="label">TIME</span>
+              <span class="value ${timeElapsed > parTime * 0.8 ? 'warning' : ''}">${timerFormatted}</span>
+            </div>
+            <div class="status-item">
+              <span class="label">STRIKES</span>
+              <span class="value">${strikes}/${GAME_CONFIG.MAX_WRONG_CLICKS}</span>
+            </div>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Wrong Clicks</span>
-            <span>${gameState.wrongClicks}/${GAME_CONFIG.MAX_WRONG_CLICKS}</span>
-          </div>
-          <div class="stat-item">
-            <span class="${timerClass}">${this.formatTime(gameState.timeElapsed)}</span>
-            <span class="stat-label">Par: ${this.formatTime(scene.par)}</span>
+          <div class="header-right">
+            <button class="btn-small" id="hintBtn" ${hintsLeft === 0 ? 'disabled' : ''}>
+              💡 ${hintCooldown > 0 ? hintCooldown : 'Hint'}
+            </button>
+            <button class="btn-small" id="pauseBtn">⏸</button>
           </div>
         </div>
-        
-        <div class="game-board">
-          <canvas id="leftCanvas" width="${GAME_CONFIG.CANVAS_WIDTH}" height="${GAME_CONFIG.CANVAS_HEIGHT}"></canvas>
-          <canvas id="rightCanvas" width="${GAME_CONFIG.CANVAS_WIDTH}" height="${GAME_CONFIG.CANVAS_HEIGHT}"></canvas>
+
+        <div class="panels">
+          <div class="panel-wrapper">
+            <div class="panel-label">Original</div>
+            <canvas id="leftCanvas" width="${GAME_CONFIG.CANVAS_WIDTH}" height="${GAME_CONFIG.CANVAS_HEIGHT}"></canvas>
+          </div>
+          <div class="panel-wrapper">
+            <div class="panel-label">Spot the changes</div>
+            <canvas id="rightCanvas" width="${GAME_CONFIG.CANVAS_WIDTH}" height="${GAME_CONFIG.CANVAS_HEIGHT}"></canvas>
+          </div>
         </div>
-        
-        <div class="controls">
-          <button class="btn hint-btn" id="hintBtn" ${!gameState.canUseHint() ? 'disabled' : ''}>
-            💡 Hint ${gameState.hintUsed}/${GAME_CONFIG.MAX_HINTS}
-            ${hintCooldown > 0 ? `(${hintCooldown}s)` : ''}
-          </button>
-          <button class="btn" id="pauseBtn">⏸ ${gameState.isPaused ? 'Resume' : 'Pause'}</button>
-          <button class="btn" id="restartBtn">🔄 Restart</button>
-          <button class="btn" id="muteBtn">🔊 ${gameState.isMuted ? 'Unmute' : 'Mute'}</button>
+
+        <div class="indicators">
+          ${[...Array(7)].map((_, i) => `<div class="dot" id="dot-${i}"></div>`).join('')}
         </div>
       </div>
-      <div class="muted-indicator ${gameState.isMuted ? 'show' : ''}">🔇 Muted</div>
     `;
     
     document.getElementById('hintBtn').addEventListener('click', () => onGameAction('hint'));
     document.getElementById('pauseBtn').addEventListener('click', () => onGameAction('pause'));
-    document.getElementById('restartBtn').addEventListener('click', () => onGameAction('restart'));
-    document.getElementById('muteBtn').addEventListener('click', () => onGameAction('mute'));
     
     return {
       leftCanvas: document.getElementById('leftCanvas'),
-      rightCanvas: document.getElementById('rightCanvas')
+      rightCanvas: document.getElementById('rightCanvas'),
+      dots: Array.from(document.querySelectorAll('.dot'))
     };
+  }
+
+  updateIndicators(dots, found) {
+    dots.forEach((dot, i) => {
+      if (found.has(i)) {
+        dot.classList.add('found');
+      } else {
+        dot.classList.remove('found');
+      }
+    });
   }
 
   showSceneComplete(stars, onNext) {

@@ -11,13 +11,14 @@ class Game {
     this.root = document.getElementById('root');
     this.gameState = new GameState();
     this.sceneGen = new SceneGenerator();
-    this.scenes = this.sceneGen.generateScenes();
+    this.scenes = this.sceneGen.scenes;
     this.audioManager = new AudioManager();
     this.ui = new UI(this.root);
     this.renderer = null;
     this.inputHandler = null;
     this.lastFrameTime = Date.now();
     this.isRunning = false;
+    this.dots = [];
     
     this.showTitle();
   }
@@ -39,17 +40,27 @@ class Game {
       return;
     }
 
-    const canvases = this.ui.showGameScreen(
-      this.scenes[sceneIdx],
-      this.gameState,
-      (action) => this.handleGameAction(action)
+    const scene = this.scenes[sceneIdx];
+    const remaining = scene.diffs.length - this.gameState.found.size;
+    const parTime = SCENES[sceneIdx]?.par || 60;
+
+    const action = (type) => this.handleGameAction(type);
+    action._hintCooldown = Math.ceil(this.gameState.hintCooldown);
+    action._hintsLeft = GAME_CONFIG.MAX_HINTS - this.gameState.hintsUsed;
+
+    const { leftCanvas, rightCanvas, dots } = this.ui.showGameScreen(
+      sceneIdx,
+      remaining,
+      this.gameState.strikes,
+      this.gameState.timeElapsed,
+      parTime,
+      action
     );
 
-    this.renderer = new Renderer([
-      canvases.leftCanvas,
-      canvases.rightCanvas
-    ]);
+    this.dots = dots;
+    this.updateIndicators();
 
+    this.renderer = new Renderer([leftCanvas, rightCanvas]);
     this.inputHandler = new InputHandler(
       this.renderer,
       (x, y, isLeft) => this.handleDifferenceClick(x, y, isLeft),
@@ -60,6 +71,7 @@ class Game {
     );
 
     this.isRunning = true;
+    this.lastFrameTime = Date.now();
     this.gameLoop();
   }
 
@@ -74,11 +86,15 @@ class Game {
     this.gameState.updateHintCooldown(delta);
 
     const scene = this.scenes[this.gameState.currentScene];
-    this.renderer.drawScene(scene, this.gameState);
+    this.renderer.drawScene(scene, this.gameState.found);
+    this.renderer.updateAnimation(delta);
     this.inputHandler.drawCrosshair();
+    this.updateIndicators();
 
     if (this.gameState.isFindingComplete(scene.diffs.length)) {
       this.completeScene();
+    } else if (this.gameState.hasGameOver()) {
+      this.failScene();
     } else {
       requestAnimationFrame(() => this.gameLoop());
     }
@@ -86,28 +102,21 @@ class Game {
 
   handleDifferenceClick(x, y, isLeft) {
     const scene = this.scenes[this.gameState.currentScene];
-    const diffs = this.inputHandler.getCheckDifferences(scene, x, y, isLeft);
+    const diffs = this.inputHandler.getCheckDifferences(scene, x, y);
 
     if (diffs.length > 0) {
       const found = diffs.find(idx => !this.gameState.found.has(idx));
       if (found !== undefined) {
         this.gameState.findDifference(found);
         this.audioManager.playFoundSound();
+        this.updateIndicators();
       } else {
-        this.gameState.addWrongClick();
+        this.gameState.addStrike();
         this.audioManager.playErrorSound();
-
-        if (this.gameState.wrongClicks >= GAME_CONFIG.MAX_WRONG_CLICKS) {
-          this.failScene();
-        }
       }
     } else {
-      this.gameState.addWrongClick();
+      this.gameState.addStrike();
       this.audioManager.playErrorSound();
-
-      if (this.gameState.wrongClicks >= GAME_CONFIG.MAX_WRONG_CLICKS) {
-        this.failScene();
-      }
     }
   }
 
@@ -124,7 +133,6 @@ class Game {
     });
 
     if (unFound.length > 0) {
-      const hint = unFound[Math.floor(Math.random() * unFound.length)];
       this.gameState.useHint();
       this.audioManager.playHintSound();
     }
@@ -137,9 +145,9 @@ class Game {
 
   handleRestart() {
     this.gameState.found = new Set();
-    this.gameState.wrongClicks = 0;
+    this.gameState.strikes = 0;
     this.gameState.timeElapsed = 0;
-    this.gameState.hintUsed = 0;
+    this.gameState.hintsUsed = 0;
     this.gameState.hintCooldown = 0;
     this.loadScene();
   }
@@ -147,7 +155,6 @@ class Game {
   handleMute() {
     this.gameState.isMuted = !this.gameState.isMuted;
     this.audioManager.setMuted(this.gameState.isMuted);
-    this.loadScene();
   }
 
   handleGameAction(action) {
@@ -170,7 +177,8 @@ class Game {
   completeScene() {
     this.isRunning = false;
     const scene = this.scenes[this.gameState.currentScene];
-    const score = this.calculateScore(scene);
+    const parTime = SCENES[this.gameState.currentScene]?.par || 60;
+    const score = this.calculateScore(parTime);
 
     this.audioManager.playSceneCompleteSound();
     this.gameState.saveSceneScore(score);
@@ -188,11 +196,22 @@ class Game {
     this.showTitle();
   }
 
-  calculateScore(scene) {
-    const timePenalty = this.gameState.timeElapsed / scene.par;
-    const wrongPenalty = this.gameState.wrongClicks / GAME_CONFIG.MAX_WRONG_CLICKS * 0.5;
-    const score = Math.max(1, 3 - timePenalty - wrongPenalty);
+  calculateScore(parTime) {
+    const timePenalty = this.gameState.timeElapsed / parTime;
+    const strikePenalty = (this.gameState.strikes / GAME_CONFIG.MAX_WRONG_CLICKS) * 0.5;
+    const score = Math.max(1, 3 - timePenalty - strikePenalty);
     return Math.round(score * 10) / 10;
+  }
+
+  updateIndicators() {
+    if (this.dots.length === 0) return;
+    this.dots.forEach((dot, i) => {
+      if (this.gameState.found.has(i)) {
+        dot.classList.add('found');
+      } else {
+        dot.classList.remove('found');
+      }
+    });
   }
 
   showGameEnd() {
