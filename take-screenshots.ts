@@ -37,12 +37,14 @@ await page.goto(`http://localhost:${PORT}`, { waitUntil: 'networkidle' });
 
 mkdirSync('screenshots', { recursive: true });
 
-// Screenshot 0: Title screen
+// Screenshot 0: Title screen  
 await page.screenshot({
-  path: 'screenshots/4-title.png',
+  path: 'screenshots/4-title.jpg',
   fullPage: false,
+  quality: 75,
+  type: 'jpeg',
 });
-console.log('Screenshot 4 taken: 4-title.png');
+console.log('Screenshot 4 taken: 4-title.jpg');
 
 // Start game
 await page.click('button#startBtn');
